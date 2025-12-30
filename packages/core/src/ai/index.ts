@@ -5,4 +5,5 @@ export * from './google';
 export * from './xai';
 export * from './local';
 export * from './factory';
+export * from './rate-limiter';
 

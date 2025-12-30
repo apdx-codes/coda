@@ -13,7 +13,9 @@ export class OpenAIProvider extends BaseAIProvider {
       throw new Error('OpenAI API key not configured');
     }
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    this.logRequest('generate', { temperature: request.temperature });
+
+    const response = await this.fetchWithTimeout('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -30,12 +32,12 @@ export class OpenAIProvider extends BaseAIProvider {
 
     if (!response.ok) {
       const error = await response.text();
-      throw new Error(`OpenAI API error: ${error}`);
+      this.handleError(new Error(error), 'generate');
     }
 
     const data = await response.json();
 
-    return {
+    const result: AIResponse = {
       content: data.choices[0].message.content,
       usage: {
         promptTokens: data.usage.prompt_tokens,
@@ -45,6 +47,9 @@ export class OpenAIProvider extends BaseAIProvider {
       model: data.model,
       provider: this.name,
     };
+
+    this.logResponse('generate', result);
+    return result;
   }
 
   async *generateStream(request: AIRequest): AsyncGenerator<string> {
