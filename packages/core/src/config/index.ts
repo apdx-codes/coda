@@ -1,4 +1,7 @@
 import { z } from 'zod';
+import { logger } from '../utils/logger';
+import { ConfigurationError } from '../utils/errors';
+import { validateApiKey, validateUrl } from '../utils/validation';
 
 export const AIProviderSchema = z.enum(['openai', 'anthropic', 'google', 'xai', 'local']);
 export type AIProvider = z.infer<typeof AIProviderSchema>;
@@ -28,6 +31,7 @@ export class ConfigManager {
 
   private constructor() {
     this.config = this.loadConfig();
+    this.validateConfig();
   }
 
   static getInstance(): ConfigManager {
@@ -35,6 +39,29 @@ export class ConfigManager {
       ConfigManager.instance = new ConfigManager();
     }
     return ConfigManager.instance;
+  }
+
+  private validateConfig(): void {
+    const enabledProviders = this.getEnabledProviders();
+    
+    if (enabledProviders.length === 0) {
+      logger.warn('No AI providers configured. Please add at least one API key.');
+    }
+
+    // Validate Solana RPC URL
+    if (!validateUrl(this.config.solana.rpcUrl)) {
+      throw new ConfigurationError(`Invalid Solana RPC URL: ${this.config.solana.rpcUrl}`);
+    }
+
+    // Validate port
+    if (this.config.server.port < 1 || this.config.server.port > 65535) {
+      throw new ConfigurationError(`Invalid port number: ${this.config.server.port}`);
+    }
+
+    logger.info('Configuration validated successfully', {
+      enabledProviders: enabledProviders.length,
+      network: this.config.solana.network,
+    });
   }
 
   private loadConfig(): Config {

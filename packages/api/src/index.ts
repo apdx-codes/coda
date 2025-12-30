@@ -7,8 +7,17 @@ import { providerRouter } from './routes/provider';
 import { healthRouter } from './routes/health';
 import { errorHandler } from './middleware/error-handler';
 import { requestLogger } from './middleware/logger';
+import { validateEnvironment } from './config/env';
 
 dotenv.config();
+
+// Validate environment variables on startup
+try {
+  validateEnvironment();
+} catch (error) {
+  console.error('Failed to start server:', error);
+  process.exit(1);
+}
 
 class Server {
   private app: Application;
