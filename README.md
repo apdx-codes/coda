@@ -1,5 +1,19 @@
 # Coda Protocol
 
+## Donation Addresses
+
+**Solana:**
+```
+DzWyLM6bz2dVGoh7t4fGoBpVkhewhuYrdGug6JQ3uhMg
+```
+
+**Ethereum / Base:**
+```
+0x4171c7F8d20747A3e0f1b904364bC963bb58E927
+```
+
+---
+
 Coda is a Web3 no-code builder protocol for Solana blockchain development. It enables developers to generate production-ready Solana programs, Rust code, and TypeScript SDKs using AI assistance from multiple providers (OpenAI, Anthropic, Google, xAI, or local AI models).
 
 ## Features
