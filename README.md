@@ -1,5 +1,11 @@
 # Coda Protocol
 
+## Contract Address (CA)
+
+```
+6BkC3K5v1FtzsJVs7xq6YjAAhpr2W492LPq3iRG8pump
+```
+
 ## Donation Addresses
 
 **Solana:**
