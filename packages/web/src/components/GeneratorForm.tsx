@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useDebounce } from '../hooks/useDebounce';
 
 interface GeneratorFormProps {
   onGenerate: (data: any) => void;
@@ -6,10 +8,17 @@ interface GeneratorFormProps {
 }
 
 export function GeneratorForm({ onGenerate, loading }: GeneratorFormProps) {
-  const [projectType, setProjectType] = useState('anchor');
+  const [projectType, setProjectType] = useLocalStorage('coda-project-type', 'anchor');
   const [description, setDescription] = useState('');
   const [features, setFeatures] = useState('');
-  const [provider, setProvider] = useState('default');
+  const [provider, setProvider] = useLocalStorage('coda-provider', 'default');
+  
+  const debouncedDescription = useDebounce(description, 500);
+  const [charCount, setCharCount] = useState(0);
+
+  useEffect(() => {
+    setCharCount(description.length);
+  }, [description]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,11 +66,17 @@ export function GeneratorForm({ onGenerate, loading }: GeneratorFormProps) {
             placeholder="Describe what you want to build... Be specific about features, security requirements, and functionality."
             rows={4}
             required
+            maxLength={5000}
             className="input resize-none"
           />
-          <p className="mt-1 text-xs text-gray-500">
-            Example: "A token staking program with rewards distribution"
-          </p>
+          <div className="flex justify-between mt-1">
+            <p className="text-xs text-gray-500">
+              Example: "A token staking program with rewards distribution"
+            </p>
+            <p className="text-xs text-gray-500">
+              {charCount}/5000
+            </p>
+          </div>
         </div>
 
         <div>
